@@ -13,7 +13,8 @@
    [clj-time.core :as t]
    [clj-time.coerce :as tc]
    [environ.core :refer [env]]
-   [twitter-streaming-client.core :as twitter-client])
+   [twitter-streaming-client.core :as twitter-client]
+   [clojure.data.json :as json])
   (:import
    (twitter.callbacks.protocols AsyncStreamingCallback)))
 
@@ -26,15 +27,12 @@
                      :user (env :db-user)
                      :password (env :db-pass)}))
 
-(defentity tweets)
+(defentity stream-tweets)
 
 ;; create the client with a twitter.api streaming method
 (def stream (twitter-client/create-twitter-stream twitter.api.streaming/statuses-filter
                                           :oauth-creds twitter-creds
                                           :params {:follow "1640526475"}))
-
-;;asynchronously call function with the :queues map from the TwitterStream
-;; record, then reset the :queues map to empty
 
 (defn create-database-objects [queues]
   "Takes a map of queues and creates the tweet database objects for each tweet
@@ -42,7 +40,9 @@
   (println "-----")
   (println "=> Would create " (count (:tweet queues)) " tweets from queues")
   (println "-----")
-  (def debug-mutable-queues queues))
+  (def debug-mutable-queues queues)
+  (for [tweet (:tweet queues)]
+    ))
 
 (defn do-on-queues-changed [k, stream, os, nst]
   "k[ey], r[ef], o[ld]s[tate], n[ew]st[ate]

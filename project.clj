@@ -11,7 +11,7 @@
                  [korma "0.4.0"]
                  [environ "1.0.0"]
                  [twitter-streaming-client "0.3.2"]
-                 [clj-logging-config "1.9.12"]]
+                 [org.clojure/data.json "0.2.5"]]
   :plugins [[lein-environ "1.0.0"]]
   :main ^:skip-aot stream-crawler.core
   :target-path "target/%s"
