@@ -9,7 +9,9 @@
                  [postgresql "9.3-1102.jdbc41"]
                  [clj-time "0.8.0"]
                  [korma "0.4.0"]
-                 [environ "1.0.0"]]
+                 [environ "1.0.0"]
+                 [twitter-streaming-client "0.3.2"]
+                 [clj-logging-config "1.9.12"]]
   :plugins [[lein-environ "1.0.0"]]
   :main ^:skip-aot stream-crawler.core
   :target-path "target/%s"
