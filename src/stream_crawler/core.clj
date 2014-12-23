@@ -37,19 +37,6 @@
 (defentity keyword-objects
   (table :keywords))
 
-(def keywords
-  (map :keyword
-    (select keyword-objects
-      (fields :keyword))))
-
-(def serialized-keywords
-  (str/join "," keywords))
-
-;; create the client with a twitter.api streaming method
-(def stream (twitter-client/create-twitter-stream twitter.api.streaming/statuses-filter
-                                          :oauth-creds twitter-creds
-                                          :params {:track serialized-keywords}))
-
 (defn create-tweet-entities [twitter-tweet]
   ; the entirety of this method should be wrapped in a database transaction
   (log/info (str "created tweet! (id: " (:id twitter-tweet) ")"))
@@ -71,7 +58,16 @@
 
 
 (defn -main []
-  ; (twitter-client/cancel-twitter-stream stream)
-  (log/info (str "Starting stream client at " t/now))
-  (twitter-client/start-twitter-stream stream)
-  (add-watch stream :queues do-on-queues-changed))
+  (let
+    [serialized-keywords
+      (str/join "," (map :keyword
+        (select keyword-objects
+          (fields :keyword))))
+      stream
+        (twitter-client/create-twitter-stream twitter.api.streaming/statuses-filter
+          :oauth-creds twitter-creds
+          :params {:track serialized-keywords})]
+
+    (log/info (str "Starting stream client at " t/now))
+    (twitter-client/start-twitter-stream stream)
+    (add-watch stream :queues do-on-queues-changed)))
