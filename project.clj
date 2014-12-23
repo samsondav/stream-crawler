@@ -10,10 +10,21 @@
                  [clj-time "0.8.0"]
                  [korma "0.4.0"]
                  [environ "1.0.0"]
-                 [twitter-streaming-client "0.3.2"]
-                 [org.clojure/data.json "0.2.5"]]
+                 [org.clojure/data.json "0.2.5"]
+                 [joda-time "2.2"]
+                 [ch.qos.logback/logback-classic "1.0.11"]
+                 [org.slf4j/slf4j-api "1.7.5"]
+                 [org.slf4j/jcl-over-slf4j "1.7.5"]
+                 [org.slf4j/log4j-over-slf4j "1.7.5"]
+                 [org.slf4j/jul-to-slf4j "1.7.5"]
+                 [org.clojure/core.incubator "0.1.2"]
+                 [org.clojure/tools.logging "0.2.6"]
+                 [org.clojure/tools.macro "0.1.2"]
+                 [org.clojure/data.json "0.2.2"]]
   :plugins [[lein-environ "1.0.0"]]
   :main ^:skip-aot stream-crawler.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}}
-  :jvm-opts ["-Duser.timezone=UTC"])
+  :jvm-opts ["-Duser.timezone=UTC"]
+  :aliases {"all" ["with-profile" "dev:1.4,dev:1.5,dev:1.6"]})
+

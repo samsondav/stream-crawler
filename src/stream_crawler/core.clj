@@ -16,7 +16,9 @@
    [environ.core :refer [env]]
    [twitter-streaming-client.core :as twitter-client]
    [clojure.data.json :as json]
-   [clj-time.format :as tf])
+   [clj-time.format :as tf]
+   [clojure.tools.logging :as log]
+   [clojure.string :as str])
   (:import
    (twitter.callbacks.protocols AsyncStreamingCallback)))
 
@@ -32,14 +34,25 @@
 (defentity stream-tweets
   (table :twitter_stream_dump))
 
+(defentity keyword-objects
+  (table :keywords))
+
+(def keywords
+  (map :keyword
+    (select keyword-objects
+      (fields :keyword))))
+
+(def serialized-keywords
+  (str/join "," keywords))
+
 ;; create the client with a twitter.api streaming method
 (def stream (twitter-client/create-twitter-stream twitter.api.streaming/statuses-filter
                                           :oauth-creds twitter-creds
-                                          :params {:follow "1640526475"}))
+                                          :params {:track serialized-keywords}))
 
 (defn create-tweet-entities [twitter-tweet]
   ; the entirety of this method should be wrapped in a database transaction
-  (println (str "=> Creating tweet id: " (:id twitter-tweet)))
+  (log/info (str "created tweet! (id: " (:id twitter-tweet) ")"))
   (insert stream-tweets
     (values (twitter-tweet-to-stream-tweet twitter-tweet))))
 
@@ -53,11 +66,12 @@
   (let [buffered-tweets (:tweet (k nst))]
     (if (> (count buffered-tweets) 0)
       ; at least one tweet is in the queue
-      (do (println "=> Emptying queue and attempting to commit tweet")
+      (do (log/info "emptying queue and attempting to commit tweet")
           (twitter-client/empty-queues stream commit-tweet-queue-to-database)))))
 
 
 (defn -main []
   ; (twitter-client/cancel-twitter-stream stream)
+  (log/info (str "Starting stream client at " t/now))
   (twitter-client/start-twitter-stream stream)
   (add-watch stream :queues do-on-queues-changed))
