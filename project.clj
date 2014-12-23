@@ -1,6 +1,6 @@
-(defproject stream-crawler "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+(defproject stream-crawler "0.1a"
+  :description "Stream Crawler for semant.io"
+  :url "http://dash.semant.io"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
