@@ -22,21 +22,6 @@
   (:import
    (twitter.callbacks.protocols AsyncStreamingCallback)))
 
-(def twitter-creds (make-oauth-creds (env :twitter-consumer-key)
-                                (env :twitter-consumer-secret)
-                                (env :user-access-token)
-                                (env :user-access-token-secret)))
-
-(defdb db (postgres {:db (env :db-name)
-                     :user (env :db-user)
-                     :password (env :db-pass)}))
-
-(defentity stream-tweets
-  (table :twitter_stream_dump))
-
-(defentity keyword-objects
-  (table :keywords))
-
 (defn create-tweet-entities [twitter-tweet]
   ; the entirety of this method should be wrapped in a database transaction
   (log/info (str "created tweet! (id: " (:id twitter-tweet) ")"))
@@ -56,17 +41,31 @@
       (do (log/info "emptying queue and attempting to commit tweet")
           (twitter-client/empty-queues stream commit-tweet-queue-to-database)))))
 
-
 (defn -main []
-  (let
-    [serialized-keywords
+  (defdb db (postgres {:db (env :db-name)
+                       :user (env :db-user)
+                       :password (env :db-pass)}))
+
+  (defentity stream-tweets
+    (table :twitter_stream_dump))
+
+  (defentity keyword-objects
+    (table :keywords))
+
+  (let [
+    serialized-keywords
       (str/join "," (map :keyword
         (select keyword-objects
           (fields :keyword))))
-      stream
-        (twitter-client/create-twitter-stream twitter.api.streaming/statuses-filter
-          :oauth-creds twitter-creds
-          :params {:track serialized-keywords})]
+    stream
+      (twitter-client/create-twitter-stream twitter.api.streaming/statuses-filter
+        :oauth-creds twitter-creds
+        :params {:track serialized-keywords})
+
+    twitter-creds (make-oauth-creds (env :twitter-consumer-key)
+                                    (env :twitter-consumer-secret)
+                                    (env :user-access-token)
+                                    (env :user-access-token-secret))]
 
     (log/info (str "Starting stream client at " t/now))
     (twitter-client/start-twitter-stream stream)

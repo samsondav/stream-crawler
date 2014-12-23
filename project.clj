@@ -22,7 +22,7 @@
                  [org.clojure/tools.macro "0.1.2"]
                  [org.clojure/data.json "0.2.2"]]
   :plugins [[lein-environ "1.0.0"]]
-  :main ^:skip-aot stream-crawler.core
+  :main stream-crawler.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}}
   :jvm-opts ["-Duser.timezone=UTC"]
