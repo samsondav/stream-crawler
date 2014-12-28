@@ -39,33 +39,25 @@
 
   (defdb db (postgres db-creds))
 
-  (defentity stream-tweets
-    (table :twitter_stream_dump))
-
-  (defentity keyword-objects
-    (table :keywords))
-
   (def serialized-keywords
     (str/join "," (map :keyword
       (select keyword-objects
-        (fields :keyword)))))
+        (fields :keyword)
+        (where {:type "PositiveKeyword"})))))
 
   (def stream
     (twitter-client/create-twitter-stream twitter.api.streaming/statuses-filter
       :oauth-creds twitter-creds
       :params {:track serialized-keywords}))
 
-  (defn create-tweet-entities [twitter-tweet]
-    ; the entirety of this method should be wrapped in a database transaction
-    (log/info (str "created tweet! (id: " (:id twitter-tweet) ")"))
-    (insert stream-tweets
-      (values (twitter-tweet-to-stream-tweet twitter-tweet))))
-
   (defn commit-tweet-queue-to-database [queues]
     "Takes a map of queues and creates the tweet database objects for each tweet
     in the queue"
     (let [tweet-queue queues]
-      (doseq [tweet (:tweet tweet-queue)] (create-tweet-entities tweet))))
+      (def mut-debug-queues queues)
+      (println "wrote queues!")
+      ; (doseq [tweet (:tweet tweet-queue)] (create-tweet-entities tweet))
+      ))
 
   (defn do-on-queues-changed [k, stream, os, nst]
     (let [buffered-tweets (:tweet (k nst))]
@@ -78,3 +70,6 @@
   (log/info (str "Starting stream client at " t/now))
   (twitter-client/start-twitter-stream stream)
   (add-watch stream :queues do-on-queues-changed))
+
+; (twitter-client/cancel-twitter-stream stream)
+

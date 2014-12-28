@@ -20,7 +20,8 @@
                  [org.clojure/core.incubator "0.1.2"]
                  [org.clojure/tools.logging "0.2.6"]
                  [org.clojure/tools.macro "0.1.2"]
-                 [org.clojure/data.json "0.2.2"]]
+                 [org.clojure/data.json "0.2.2"]
+                 [org.clojars.gjahad/debug-repl "0.3.3"]]
   :plugins [[lein-environ "1.0.0"]]
   :main stream-crawler.core
   :target-path "target/%s"
