@@ -187,9 +187,9 @@
         ; always create parent first
         (create-tweet-entities (get-parent twitter-tweet)))
       (if (naan/read tweets tweet-id)
-        :noop-tweet-already-exists
+        (log/info (str "HIT existing tweet: " tweet-id))
         (do
-          (log/info (str "creating tweet! (id: " tweet-id ")"))
+          (log/info (str "CREATE tweet: " tweet-id))
           (naan/create tweets (twitter-tweet-to-db-tweet twitter-tweet))
           (if (not (retweet? twitter-tweet))
               ; create a sentiment for this tweet if it isn't a retweet
