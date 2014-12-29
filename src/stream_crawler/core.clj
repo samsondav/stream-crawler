@@ -54,9 +54,9 @@
     "Takes a map of queues and creates the tweet database objects for each tweet
     in the queue"
     (let [tweet-queue queues]
-      (def mut-debug-queues queues)
-      (println "wrote queues!")
-      ; (doseq [tweet (:tweet tweet-queue)] (create-tweet-entities tweet))
+      ; (def mut-debug-queues queues)
+      ; (println "wrote queues!")
+      (doseq [tweet (:tweet tweet-queue)] (create-tweet-entities tweet))
       ))
 
   (defn do-on-queues-changed [k, stream, os, nst]
