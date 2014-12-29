@@ -137,10 +137,11 @@
       :listed_count (:listed_count tw-author)
       :profile_image_url (:profile_image_url tw-author) }))
 
-(defn build-hashtags [tw-id tw-tweet]
+(defn build-hashtags [tw-tweet]
   "Build map[s] of hashtag[s] in tweet, including the tweet_id.
    Returns an empty array if none are found"
-  (let [hashtags (:hashtags (:entities tw-tweet))]
+  (let [hashtags (:hashtags (:entities tw-tweet))
+        tw-id (:id tw-tweet)]
     (mapv
       (fn [tw-ht] {:hashtag (str "#" (:text tw-ht)) :tweet_id tw-id})
       hashtags )))
@@ -151,8 +152,11 @@
     (for [tw-url urls]
       {:extended_url (:expanded_url tw-url)})))
 
-(defn create-hashtags-from-tweet [tweet-id twitter-tweet]
-  (naan/create hashtags (build-hashtags tweet-id twitter-tweet)))
+(defn create-hashtags-from-tweet [twitter-tweet]
+  (let [hts-attrs (build-hashtags twitter-tweet)]
+    (if (not (empty? hts-attrs))
+      (naan/create hashtags hts-attrs)
+      :no-hashtags)))
 
 (defn find-or-create-url [url]
   "Looks for a url matching the [short] url in the supplied url entity map.
@@ -164,9 +168,10 @@
       existing-url-ent
       (naan/create urls url))))
 
-(defn create-urls-from-tweet [tweet-id twitter-tweet]
+(defn create-urls-from-tweet [twitter-tweet]
   (doseq [url (build-urls twitter-tweet)]
-    (let [url-id (:id (find-or-create-url url))]
+    (let [url-id (:id (find-or-create-url url))
+          tweet-id (:id twitter-tweet)]
       (naan/create url-in-tweets {:tweet_id tweet-id :url_id url-id}))))
 
 (defn create-sentiment-for-tweet [tweet-id]
@@ -194,6 +199,6 @@
           (if (not (retweet? twitter-tweet))
               ; create a sentiment for this tweet if it isn't a retweet
               (create-sentiment-for-tweet tweet-id))
-          (create-hashtags-from-tweet tweet-id twitter-tweet)
-          (create-urls-from-tweet tweet-id twitter-tweet)
+          (create-hashtags-from-tweet twitter-tweet)
+          (create-urls-from-tweet twitter-tweet)
           (find-or-create-author-from-tweet twitter-tweet))))))

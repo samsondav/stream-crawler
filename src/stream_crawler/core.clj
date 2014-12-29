@@ -56,8 +56,7 @@
     (let [tweet-queue queues]
       ; (def mut-debug-queues queues)
       ; (println "wrote queues!")
-      (doseq [tweet (:tweet tweet-queue)] (create-tweet-entities tweet))
-      ))
+      (doseq [tweet (:tweet tweet-queue)] (create-tweet-entities tweet))))
 
   (defn do-on-queues-changed [k, stream, os, nst]
     (let [buffered-tweets (:tweet (k nst))]
@@ -67,7 +66,7 @@
             (twitter-client/empty-queues stream commit-tweet-queue-to-database)))))
 
 
-  (log/info (str "Starting stream client at " t/now))
+  (log/info (str "Starting stream client at " (t/now)))
   (twitter-client/start-twitter-stream stream)
   (add-watch stream :queues do-on-queues-changed))
 
