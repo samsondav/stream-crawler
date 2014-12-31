@@ -147,10 +147,17 @@
       hashtags )))
 
 (defn build-urls [tw-tweet]
-  "Build map[s] of url[s] in tweet. Returns an empty array if none are found."
+  "Build map[s] of url[s] in tweet. Returns an empty sequence if none are found."
   (let [urls (:urls (:entities tw-tweet))]
     (for [tw-url urls]
       {:extended_url (:expanded_url tw-url)})))
+
+(defn build-media [tw-tweet]
+  "Build map[s] of media entity[s] in tweet. Returns an empty sequence if none
+   are found."
+  (let [medias (:media (:entities tw-tweet))]
+    (for [media medias]
+      {:extended_url (:expanded_url media)})))
 
 (defn create-hashtags-from-tweet [twitter-tweet]
   (let [hts-attrs (build-hashtags twitter-tweet)]
@@ -169,7 +176,7 @@
       (naan/create urls url))))
 
 (defn create-urls-from-tweet [twitter-tweet]
-  (doseq [url (build-urls twitter-tweet)]
+  (doseq [url (concat (build-urls twitter-tweet) (build-media twitter-tweet))]
     (let [url-id (:id (find-or-create-url url))
           tweet-id (:id twitter-tweet)]
       (naan/create url-in-tweets {:tweet_id tweet-id :url_id url-id}))))
