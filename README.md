@@ -21,7 +21,7 @@ environment variables or the crawler will fail to run. An example invocation
 might look like this:
 
 ```
-DB_PORT='5432' DB_URL='my.database.com' DB_NAME='my_db_name' DB_USER='my_user' DB_PASS='my_pass' TWITTER_CONSUMER_KEY="my_key" TWITTER_CONSUMER_SECRET="my_secret" USER_ACCESS_TOKEN="my_token" USER_ACCESS_TOKEN_SECRET="my_token_secret" java -jar /path/tostream-crawler-0.1a-standalone.jar
+DB_PORT='5432' DB_URL='my.database.com' DB_NAME='my_db_name' DB_USER='my_user' DB_PASS='my_pass' TWITTER_CONSUMER_KEY="my_key" TWITTER_CONSUMER_SECRET="my_secret" USER_ACCESS_TOKEN="my_token" USER_ACCESS_TOKEN_SECRET="my_token_secret" java -jar target/uberjar/stream-crawler-0.1a-standalone.jar
 ```
 
 All of the environment variables specified above must be present for the crawler
